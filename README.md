@@ -1,7 +1,7 @@
 plan-it
 =======
 
-Demo of how GitHub can be used as transparent project management tool for state, regional, or local governments.
+Demo of how GitHub can be used as transparent project management tool for state, regional, or local governments. [http://plan-it.github.io/plan-it/](http://plan-it.github.io/plan-it/)
 
 Data
 =======
