@@ -4,50 +4,89 @@ title: Data
 category: 'data'
 ---
 <script src="{{ site.baseurl}}/lib/javascripts/director.min.js"></script>
+<script src="{{ site.baseurl}}/lib/javascripts/sammy.min.js"></script>
+<script src="{{ site.baseurl}}/lib/javascripts/json-to-table.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script type="text/javascript" src="{{ site.baseurl}}/lib/javascripts/jquery.dataTables.min.js"></script>
+<!-- <script type="text/javascript" src="{{ site.baseurl}}/lib/javascripts/dataTables.bootstrap.js"></script> -->
 <ul id="myTab" class="nav nav-tabs">
   <li class="active"><a href="#proj">Projects</a></li>
   <li><a href="#data">Data</a></li>
-  <li><a href="#other">Other</a></li>
+  <li><a href="#issues" id="issues-tab">Issues</a></li>
 </ul>
 <div class="tab-content">
 	<div id="proj" class="tab-pane active">
-	<div id="project" class="col-md-6 col-sm-6 pull-right" style="display:none; z-index:1000;">
-   		<h3><span class="arcid"></span><span style="float:right; font-size:small"><a href="https://github.com/landonreed/plan-it/edit/gh-pages/data/TIP/individual/'+el.ARCID+'.csv" class="btn btn-default" role="button">Edit</a></span></h3>
-		<p><span class="description"></span></p>
-		<p><strong>Sponsor:</strong> <span class="sponsor"></span></p>
-		<p><strong>Jurisdiction:</strong> <span class="jurisdiction"></span></p>
-		<p><strong>FiscalYear:</strong> 
-		<span><select class="fiscal-year" >
-			  <option>2013</option>
-			  <option>2014</option>
-			  <option>2015</option>
-			  <option>2016</option>
-			  <option>2017</option>
-			</select>
-		</span>
-		</p><hr>
-		<h4>Open an issue for <span class="arcid"></span>:</h4>
-		<input id="issue-title" type="text" class="form-control" placeholder=""></br>
-		<textarea id="issue-body" class="form-control" rows="3" placeholder="Describe issue or change here..."></textarea></br>
-		<label>Issue Type:</label></br>
-		<button id="general" class="issue btn btn-sm btn-primary" role="button">General</button>
-		<button id="delay" class="issue btn btn-sm btn-warning" role="button">Delay</button>
-		<button id="delete" class="issue btn btn-sm btn-danger" role="button">Delete</button>
-		<button id="funding" class="issue btn btn-sm btn-success" role="button">Funding</button><hr>
-		<!-- "https://github.com/landonreed/plan-it/issues/new?title='+el.ARCID+'&body='+$('#issue-body').val()+'" -->
-	</div>
-	<div class="col-md-6 col-sm-6">
-		<h1>Individual Projects</h1>
-		<p>Here you'll find all of the data segmented by individual projects:</p>
-		<div style="height:300px; overflow:auto;">
-			<table id="projects"  class="table table-striped table-condensed"></table>
+		<div id="project" class="col-md-8 col-sm-7 col-xs-12 pull-right" style="display:none; z-index:1000;">
+			<h3><span class="arcid"></span><span style="float:right; font-size:small"><button class="btn btn-default btn-sm" id="report" role="button">Report</button> <button class="btn btn-default btn-sm" id="edit" role="button">Edit</button></span></h3>
+			<ul id="project-pill" class="nav nav-pills">
+				<li id="home-tab" class="active"><a href="#home">Home</a></li>
+				
+				<li><a href="#pmap" id="map-tab">Map</a></li>
+				<li><a href="#history" id="history-tab">History</a></li>
+				<li><a href="#issue" id="issue-tab">Issue</a></li>
+			</ul>
+			<div class="tab-content">
+				<div id="history" class="tab-pane pill">
+					
+						<h1>History</h1>
+					
+				</div>
+				<div id="issue" class="tab-pane pill">
+					
+						<h3>Open an issue for <span class="arcid"></span>:</h3>
+						<input id="issue-title" type="text" class="form-control" placeholder=""></br>
+						<textarea id="issue-body" class="form-control" rows="3" placeholder="Describe issue or change here..."></textarea></br>
+						<label>Issue Type:</label></br>
+						<button id="general" class="issue btn btn-sm btn-primary" role="button">General</button>
+						<button id="delay" class="issue btn btn-sm btn-warning" role="button">Delay</button>
+						<button id="delete" class="issue btn btn-sm btn-danger" role="button">Delete</button>
+						<button id="funding" class="issue btn btn-sm btn-success" role="button">Funding</button><hr>
+				</div>
+				<div id="pmap" class="tab-pane pill">
+						<div id="proj-map"></div>
+					
+				</div>
+				<div id="home" class="tab-pane pill active">
+					<p id="description"><span class="description"></span></p>
+					<p>
+						<strong>Sponsor:</strong> <span class="sponsor"></span>&nbsp;&nbsp;&nbsp;
+						<strong>Jurisdiction:</strong> <span class="jurisdiction"></span>&nbsp;&nbsp;&nbsp;
+						<strong>Status:</strong> <span class="status"></span>
+					</p>
+					<p>
+						<strong>Analysis Level:</strong> <span class="analysis"></span>&nbsp;&nbsp;&nbsp;
+					</p>
+					<!-- <p><strong>FiscalYear:</strong> 
+					<span><select class="fiscal-year" >
+						  <option>2013</option>
+						  <option>2014</option>
+						  <option>2015</option>
+						  <option>2016</option>
+						  <option>2017</option>
+						</select>
+					</span>
+					</p> -->
+					<div style="overflow:auto; max-height:300px">
+						<table id="js-table" class="table table-condensed table-bordered"></table>
+					</div>
+				</div>
+			</div>
 		</div>
-	</div>
-	
+		<div class="col-md-4 col-sm-5">
+			<h1>Individual Projects</h1>
+			<p>Search for project data by ARC ID:</p>
+			<input class="form-control" id="searchInput" width="20px" placeholder="Type To Filter"></span>
+			<!-- <div class="table-responsive" style="height:300px; overflow:auto;">
+				<table id="projects"  class="table table-hover table-condensed"></table>
+				
+			</div> -->
+			<div id="demo"></div>
+		</div>
    </div>
-   <div id="other" class="tab-pane">
+   <div id="issues" class="tab-pane">
    	 <div class="col-md-6">
-     <h1>Other</h1>
+     <h1>Issues</h1>
+     <div id="issue-list"></div>
      </div>
    </div>
    <div id="data" class="tab-pane">
@@ -68,17 +107,161 @@ category: 'data'
 </div>
 
 
+
 <script type="text/javascript">
+(function($) {
+      
+        var app = $.sammy('#proj', function() {
+      // 		this.get('#/', function(context) {
+		    //     context.log('Yo yo yo');
+		    // });
+		    this.get('{{ site.baseurl }}/data/#/:id', function() {
+				// alert(this.params['name']);
+				id = this.params['id']
+				document.title = id + " {{ page.title }} | Plan-It"
+				$('#'+id+'-link').closest('tr').addClass(color).siblings().removeClass(color);
+				$('#proj-map').empty()
+				$('#history').empty()
+				d3.csv("{{ site.baseurl}}/data/TIP/individual/"+id+".csv")
+		    	.row(function(d) {
+			    return {
+			        ARCID: d.ARCID,
+			        Description: d.Description,
+			        Jurisdiction: d.Jurisdiction,
+			        ModelingNetworkYear: d.ModelingNetworkYear,
+			        Sponsor: d.Sponsor,
+			        ExistLanes: d.ExistLanes,
+			        ProposedLanes: d.ProposedLanes,
+			        Length: d.Length,
+			        GDOTPI: d.GDOTPI,
+			        Limits: d.Limits,
+			        Status: d.Status,
+			        ProjectType: d.ProjectType,
+			        Analysis: d.Analysis,
+			        Phase: d.Phase,
+			        Auth: d.PhaseStatus,
+			        FY: d.FiscalYear,
+			        FundSource: d.FundSource,
+			        Federal: d.Federal,
+			        State: d.State,
+			        Local: d.Local,
+			        Bond: d.Bond,
+			        Total: d.Total
+			        // FederalSum: d.FederalSum,
+			        // StateSum: d.StateSum,
+			        // LocalSum: d.LocalSum,
+			        // BondSum: d.BondSum,
+			        // TotalSum: d.TotalSum
+			      };
+			})
+		    	.get(function(error, rows){
+		    		if (error){
+		    			$('.nav-pills li').removeClass('active'); // remove active class from tabs
+		    			$('.tab-pane.pill').removeClass('active');
+						$('#home').addClass('active')//.hide(); // add active class to clicked tab
+						$('#home-tab').addClass('active'); // add active class to clicked tab
+						$('.arcid').empty().append(id)
+						$('.description').empty().append('No current record of that project!')
+						$('#description').show()
+						historyClick = false;
+		    			$('#issue-title').attr('placeholder', id)
+	    				$('.sponsor').empty()
+	    				$('.jurisdiction').empty()
+	    				$('.status').empty()
+	    				$('.analysis').empty()
+	    				// $('.fiscal-year').val("")
+	    				$('#js-table').empty()
+	    				$('#project').fadeIn(250)
+	    				console.log("error")
+						return
+		    		}
+		    		record = jQuery.extend(true, {}, rows);
+		    		$.each(record, function(i, row){
+		    			delete row.ARCID
+						delete row.Description
+						delete row.Jurisdiction
+						delete row.ModelingNetworkYear
+						delete row.Sponsor
+						delete row.ExistLanes
+						delete row.ProposedLanes
+						delete row.Length
+						delete row.GDOTPI
+						delete row.Limits
+						delete row.Status
+						delete row.ProjectType
+						delete row.Analysis
+						delete row.FundSource
+						// delete row.Phase
+						// delete row.PhaseStatus 
+		    		})
+		    		
+					console.log(rows)
+					$('#project')
+			    		.fadeOut(250, function(){
+			    			// $('#home').tab('show');
+			    			$('.nav-pills li').removeClass('active'); // remove active class from tabs
+			    			$('.tab-pane.pill').removeClass('active');
+	    					$('#home').addClass('active'); // add active class to clicked tab
+	    					$('#home-tab').addClass('active'); // add active class to clicked tab
+	    					historyClick = false;
+			    			$('#issue-title').attr('placeholder', id)
+		    				$('.arcid').empty().append(id)
+		    				$('.sponsor').empty().append(rows[0].Sponsor)
+		    				$('.jurisdiction').empty().append(rows[0].Jurisdiction)
+		    				$('.status').empty().append(rows[0].Status)
+		    				$('.analysis').empty().append(rows[0].Analysis)
+		    				$('.description').empty().append(toTitleCase(rows[0].Description))
+		    				// $('.fiscal-year').val(rows[0].FiscalYear)
+		    				$('#js-table').empty().append(populateTable(record))
+		    				$('#project').fadeIn(250)
+	    			})
+			});
+			});
+      	});
+      	$(function() {
+          app.run('#/');
+        });
+      
+      })(jQuery);
+
+var tables = {}
+	$(document).ready(function(){
+		var url = window.location.href
+		var hash = url.split('/')[5]
+		console.log(hash)
+		$('#' + hash + '-row').addClass('active')
+		// runFilter()	
+		
+		
+	})
+	$('#issue-title').tooltip({title:'don\'t change this!'})
 	$('#myTab a').click(function (e) {
-	  e.preventDefault()
-	  $(this).tab('show')
+		e.preventDefault()
+		$(this).tab('show')
+	})
+	$('#project-pill a').click(function (e) {
+		e.preventDefault()
+		$(this).tab('show')
+	})
+	$('#issues-tab').click(function () {
+		console.log("issues tab")
+		if($('#issue-list').is(':empty')){
+			$.get("https://api.github.com/repos/landonreed/plan-it/issues?", function (issues) {
+				console.log(issues)
+				$.each(issues, function(i, issue){
+					$("#issue-list").append('<p><a href="'+issue.user.url+'" title="'+issue.user.login+'"><img src="'+issue.user.avatar_url+'" height="30" width="30"></a> <a href="' + issue.url + '">' + issue.title + '' + '</a></p><p>'+issue.body+'</p>');
+				})
+			});
+		}
 	})
 	var previous;
 	var id;
+	var historyClick = false
     $("select").focus(function () {
         // Store the current value on focus and on change
         previous = this.value;
     })
+
 	var router = new Router().init();
 	$('.fiscal-year').change(function(){
 		var value = $('.fiscal-year').val()
@@ -98,32 +281,350 @@ category: 'data'
 		var body = ($('#issue-body').val()) ? $('#issue-body').val() : ''
 		window.location='https://github.com/landonreed/plan-it/issues/new?title='+title+'&body='+body+'&labels='+this.id
 	})
+	$('#report').click(function(){
+		// var name = 'results.' + type
+		var a = document.createElement("a");
+		document.body.appendChild(a);
+		a.style = "display: none";
+		// var json = pivot.results().all()
+		var tableObjects = tableToJson($('#js-table').get(0))
+		console.log(tableObjects)
+		var table = tableObjects[1]
+		lengths = tableObjects[0]
+		// if (type === 'json') {
+		// 	// alert('Exporting results as ' + type + '.')
+		// 	formBlob = new Blob([JSON.stringify(table)], {
+		// 		type: 'octet/stream'
+		// 	});
+
+		// 	url = window.URL.createObjectURL(formBlob);
+		// } else if (type === 'csv') {
+		// 	// alert('Exporting results as ' + type + '.')
+		// 	csv = JSON2CSV(table)
+		// 	formBlob = new Blob([csv], {
+		// 		type: 'text/csv',
+		// 		filename: 'MyVerySpecial.csv'
+		// 	});
+
+		// 	url = window.URL.createObjectURL(formBlob);
+		// } else if (type === 'pdf') {
+			// var doc = new jsPDF();
+			// doc.fromHTML($('#pivot-table').get(0), .5, .5, {
+			//   'width': 500,
+			//   'elementHandlers': specialElementHandlers
+			// });
+			console.log(table)
+			// doc.save("results.pdf")
+			var doc = new jsPDF('p', 'pt', 'letter', true);
+			doc.setFontSize(40)
+			doc.text(id + ' Report', 30, 60)
+			doc.setFontSize(10)
+			doc.cellInitialize();
+
+			$.each(table, function (i, row) {
+				if (i == 0) {
+					$.each(lengths, function (j, length) {
+						doc.setFontStyle('bold')
+						doc.cell(10, 200, length * 5 + 13, 20, j, i)
+
+					})
+				}
+				doc.setFontStyle('normal')
+				$.each(row, function (j, cell) {
+					// if (i === 0){
+					//   doc.setFontStyle('bold')
+					//   // console.log(cell.length)
+					//   doc.cell(10, 200, lengths[j]*5+13, 20, j, i)
+
+					// }
+					// console.log(j)
+					// console.log(lengths[j])
+					doc.cell(10, 200, lengths[j] * 5 + 13, 20, cell, i + 1);
+
+				})
+			})
+			// for (row in table){
+			//   console.log(row)
+			//	 for (cell in row) {
+			//		 console.log(cell)
+			//		 // doc.cell(10, 200, 100, 20, 'Cell '+k, i);
+			//		 // k++;
+			//	 }
+			// }
+			// doc.addJS('print(true)');
+			doc.save(id+'.pdf');
+			// use jsPDF library!
+		// }
+		a.href = url;
+		a.download = name;
+		a.click();
+		window.URL.revokeObjectURL(url);
+	})
+	$('#history-tab').click(function(){
+		var branches = ['2008Q1',
+						'2008Q2',
+						'2008Q3',
+						'2008Q4',
+						'2009Q1',
+						'2009Q2',
+						'2009Q3',
+						'2009Q4',
+						'2010Q1',
+						'2010Q2',
+						'2010Q3',
+						'2010Q4',
+						'2011Q1',
+						'2011Q2',
+						'2011Q3',
+						'2011Q4',
+						'gh-pages']
+		var rows = []
+		
+		console.log('View HIstory!')
+		console.log("history tab")
+		if($('#history').is(':empty')){
+			$("#history").empty()
+			$.each(branches, function(i, branch){
+				$.get('https://api.github.com/repos/landonreed/plan-it/contents/data/TIP/individual/'+id+'.csv?ref='+branch, function (file) {
+					console.log(file.content)
+					tables[branch] = '<h4><a href="' + file._links.html + '">' + branch + '' + '</a></h4><div class="table-responsive"><table id="'+branch+'" class="table">'+populateTable(d3.csv.parse(Base64.decode(file.content), function(rows){
+							delete rows.ARCID
+					        delete rows.Description
+					        delete rows.Jurisdiction
+					        delete rows.ModelingNetworkYear
+					        delete rows.Sponsor
+					        delete rows.ExistLanes
+					        delete rows.ProposedLanes
+					        delete rows.Length
+					        delete rows.GDOTPI
+					        delete rows.Limits
+					        delete rows.Status
+					        delete rows.ProjectType
+					        delete rows.Analysis
+					        delete rows.FundSource
+					        delete rows.FederalSum
+					        delete rows.StateSum
+					        delete rows.LocalSum
+					        delete rows.BondSum
+					        delete rows.TotalSum
+					        return rows;
+						})
+							// .row(function(d){
+							// 	return {
+							// 		Phase: d.Phase,
+							//         Status: d.PhaseStatus,
+							//         FY: d.FiscalYear,
+							//         // FundSource: d.FundSource,
+							//         Federal: d.Federal,
+							//         State: d.State,
+							//         Local: d.Local,
+							//         Bond: d.Bond,
+							//         Total: d.Total
+							//     }
+							// })
+						)+'</table></div>'
+					
+				}).done(function() {
+					$("#history").append(tables[branch]);
+				})
+			})
+			$.each(branches, function(i, branch){
+				
+			})
+		}
+		
+	})
+	$('#map-tab').click(function(){
+		var match = null;
+		$.each(rtp.features, function(i, feature){
+			// console.log(feature)
+			
+			if (feature.properties.ARCID == id){
+				match = true
+				match = feature
+				console.log(match)
+				
+			}
+			
+
+		})
+		var projMap = $('#proj-map')
+		console.log(projMap.html())
+		if (projMap.is(':empty')){
+			if (match) {
+				
+				$('#proj-map').empty() // .append('<p>This project <strong>does</strong> have a geographic component.</p>')
+				console.log(match.geometry.type)
+				var latlng = ''
+				if (/Point/g.test(match.geometry.type)){
+					drawPoints(match.geometry.coordinates)
+					
+				}
+				else if (/Line/g.test(match.geometry.type)){
+					// $('#proj-map').empty().append('<p>This project <strong>does</strong> have a geographic component.  It\'s a line!</p>')
+					drawPaths(match.geometry.coordinates)
+					// var latlng = match.geometry.coordinates[0][1]+","+match.geometry.coordinates[0][0]
+				}
+				
+			}
+			else{
+				$('#proj-map').empty().append('<p>This project does not have a geographic component.</p>')
+			}
+		}
+	})
+	$('#edit').click(function(){
+		window.location='https://github.com/landonreed/plan-it/edit/gh-pages/data/TIP/individual/'+ $('.arcid').html() +'.csv'
+	})
+	href="https://github.com/landonreed/plan-it/edit/gh-pages/data/TIP/individual/'+el.ARCID+'.csv"
 	var uniqueIds = [];
+	var projectList = [];
+	var jsonHtmlTable;
+	var color = 'active'
+	function CompareTables(table1, table2) {
+	    var instHasChange = false;
+	    for (var i = 0; i < table1.rows.length; i++) {
+	        if (table1.rows[i].cells[0].innerHTML.indexOf('div') != -1) {
+	            //call CompareTables with inner table
+	            CompareTables(table1.rows[i].cells[0].childNodes[0].childNodes[0], table2);
+	        }
+	        else {
+	            var changes = RowExists(table2, table1.rows[i].cells[0].innerHTML, table1.rows[i].cells[1].innerHTML);
+	            if (!changes[0]) {
+	                table1.rows[i].style.backgroundColor = "yellow";
+	                instHasChange = true;
+	            } else if (changes[1]) {
+	                table1.rows[i].style.backgroundColor = "yellow";
+	                instHasChange = true;
+	            }
+	        }
+	    }
+	    return instHasChange;
+	}
+
+	function RowExists(table, columnName, columnValue) {
+
+	    var hasColumnOrChange = new Array(2);
+	    hasColumnOrChange[0] = false;
+	    hasColumnOrChange[1] = false;
+	    for (var i = 0; i < table.rows.length; i++) {
+	        if (table.rows[i].cells[0].innerHTML.indexOf('div') != -1) {
+	            //call RowExists with inner table
+	            hasColumnOrChange = RowExists(table.rows[i].cells[0].childNodes[0].childNodes[0], columnName, columnValue);
+	        }
+	        else {
+	            if (table.rows[i].cells[0].innerHTML == columnName) {
+	                hasColumnOrChange[0] = true;
+	                if (table.rows[i].cells[1].innerHTML != columnValue)
+	                    hasColumnOrChange[1] = true;
+	            }
+	        }
+	        //finish for loop if name was found
+	        if (hasColumnOrChange[0] == true)
+	            break;
+	    }
+
+	    return hasColumnOrChange;
+	}
+
+	function populateTable(records) {
+		// console.log(records)
+		var string = ''
+		
+		string += '<thead><tr>'
+		for (var key in record[0]) {
+				string += '<th>' + key
+    			string += '</th>'
+		}
+		string += '</tr></thead>'
+		string += '<tbody>'
+		$.each(records, function(i, record){
+			string += '<tr>'
+			for (var key in record) {
+					string += '<td>' + record[key]
+					// console.log("Key: " + key);
+	    // 			console.log("Value: " + record[key]);
+	    			string += '</td>'
+			}
+			string += '</tr>'
+		})
+		string += '</tbody>'
+		return string
+	}
 	function doDataThings(error, rows){
 		data = rows
 
 		console.log(data);
 		$.each(data, function(i, el){
-	    router.on('/'+el.ARCID, function () {
-	    	$('#project')
-	    		.fadeOut(250, function(){
-	    			$('#issue-title').attr('placeholder', el.ARCID)
-    				$('.arcid').empty().append(el.ARCID)
-    				$('.sponsor').empty().append(el.Sponsor)
-    				$('.jurisdiction').empty().append(el.Jurisdiction)
-    				$('.description').empty().append(el.Description)
-    				$('.fiscal-year').val(el.FiscalYear)
-    				$('#project').fadeIn(250)
-    				id = el.ARCID
-    			})
-	    		
-	    })
-	    if($.inArray(el.ARCID, uniqueIds) === -1) uniqueIds.push(el.ARCID);
-			});
+			if($.inArray(el.ARCID, uniqueIds) === -1) 
+	    		uniqueIds.push(el.ARCID);	
+		});
 		console.log(uniqueIds)
-		$.each(uniqueIds, function(i, id){
-			$("#projects").append('<tr><td>' +id + '</td><td><a href="#/' + id + '" class="btn btn-default btn-xs" role="button">View</a></td><td><a href="http://documents.atlantaregional.com/factsheets/' + id + '.PDF" class="btn btn-default btn-xs" role="button">Fact Sheet</a></td></tr>');
+		var url = window.location.href
+		var hash = url.split('/')[5]
+		console.log(hash)
+		$.each(uniqueIds, function(i, uniqueId){
+			projectList.push([uniqueId,'<a id="'+uniqueId+'-link" href="#/' + uniqueId + '" class="btn btn-default btn-xs view" role="button">View</a>','<a href="http://documents.atlantaregional.com/factsheets/' + uniqueId + '.PDF" class="btn btn-default btn-xs" role="button">Fact Sheet</a>'])
+			
+			// $("#projects").append('<tr id="' + uniqueId + '-row"><td class="arcid">' + uniqueId + '</td><td><a href="#/' + uniqueId + '" class="btn btn-default btn-xs view" role="button">View</a></td><td><a href="http://documents.atlantaregional.com/factsheets/' + uniqueId + '.PDF" class="btn btn-default btn-xs" role="button">Fact Sheet</a></td></tr>');
+			// // <td><button id="' + id + '-history" class="history btn btn-default btn-xs" role="button">History</button></td>
+			// if (uniqueId === hash){
+			// 	$('#' + hash + '-row').addClass('active')
+			// 	id = uniqueId
+			// }
+		
+		
+			// $('.view-row').click(function(){
+				
+			// 	// $(this).siblings().each(function() {
+			// 	// 	$('.active').remove()
+			// 	// })
+			// 	$(this).addClass('active')
+			// })
 		})
+		$('#demo').html( '<table cellpadding="0" cellspacing="0" border="0" class="display table table-condensed" id="projects"></table>' );
+	    var oTable = $('#projects').dataTable( {
+	    	"sScrollY": "200px",
+			"bPaginate": false,
+	        "aaData": projectList,
+	        "aoColumns": [
+			{ "sTitle": "" },
+			{ "sTitle": "" },
+			{ "sTitle": "" }
+			
+		]
+	    } );
+	    $('#'+id+'-link').closest('tr').addClass(color).siblings().removeClass(color);
+	    $("#searchInput").keyup( function () {
+	        /* Filter on the column (the index) of this element */
+	        oTable.fnFilter( this.value, $("#searchInput").index(this) );
+	    } );
+	     
+	     
+	     
+	    // /*
+	    //  * Support functions to provide a little bit of 'user friendlyness' to the textboxes in
+	    //  * the footer
+	    //  */
+	    // $("#searchInput").each( function (i) {
+	    //     asInitVals[i] = this.value;
+	    // } );
+	     
+	    // $("#searchInput").focus( function () {
+	    //     if ( this.className == "search_init" )
+	    //     {
+	    //         this.className = "";
+	    //         this.value = "";
+	    //     }
+	    // } );
+	     
+	    // $("#searchInput").blur( function (i) {
+	    //     if ( this.value == "" )
+	    //     {
+	    //         this.className = "search_init";
+	    //         this.value = asInitVals[$("#searchInput").index(this)];
+	    //     }
+	    // } );
+		
 	}
 	var urls = [];
 	var projects = ""
@@ -208,5 +709,56 @@ var apiUrl = ""
 	// for (url in urls){
 	// 	d3.csv
 	// }
+var rtp;
+d3.json("{{ site.baseurl }}/data/rtp_all.geojson", function(json) {
+	rtp = json
+	
+})
+
+
+// var width = 300,
+//     height = 400;
+
+// var points = d3.select("#pmap")
+// 	.append("svg")
+// 	.append("g")
+// 	    .attr("id", "points");
+// d3.json("{{ site.baseurl }}/data/rtp_points.geojson", function(json) {
+// 	var center = d3.geo.centroid(json)
+// 	var scale  = 150;
+// 	var offset = [width/2, height/2];
+// 	var projection = d3.geo.mercator().scale(scale).center(center)
+// 	  .translate(offset);
+// 	var path = d3.geo.path()
+//     	.projection(projection);
+//     var bounds  = path.bounds(json);
+//       var hscale  = scale*width  / (bounds[1][0] - bounds[0][0]);
+//       var vscale  = scale*height / (bounds[1][1] - bounds[0][1]);
+//       var scale   = (hscale < vscale) ? hscale : vscale;
+//       var offset  = [width - (bounds[0][0] + bounds[1][0])/2,
+//                         height - (bounds[0][1] + bounds[1][1])/2];
+//       projection = d3.geo.mercator().center(center)
+//         .scale(scale).translate(offset);
+//       path = path.projection(projection);
+// 	console.log(json)
+// 	points
+// 	    .selectAll("path")
+// 	    .data(json.features)
+// 	    .enter().append("path")
+// 	    .attr("d", path)
+// 	    .append("title")
+// 	    .text(function(d) { return d.properties.ARCID; });
+// 	console.log(points)
+// 	// svg.append("path")
+// 	// 	.datum({type: "FeatureCollection", features: json.features})
+// 	// 	.attr("d", path);
+// 	// svg.selectAll().attr("visibility", function(d) {
+// 		//Replace with the correct date comparison logic
+// 	// 	console.log(d)
+// 	// 	return d.date < sliderrange[1] && d.date > sliderrange[0] ? "visible" : "hidden";
+// 	// });
+// });
+
+
 
 </script>
